@@ -10,7 +10,7 @@ import Error from './shared/error';
 import playlist from '../playlist';
 
 const App = () => {
-  return !playlist.length ? (
+  return playlist.length ? (
     <MusicPlayerContainer songs={playlist} />
   ) : (
     <Error />

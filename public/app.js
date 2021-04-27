@@ -171,7 +171,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 // shared components
 // song data
 var App = function App() {
-  return !_playlist["default"].length ? /*#__PURE__*/_react["default"].createElement(_musicPlayerContainer["default"], {
+  return _playlist["default"].length ? /*#__PURE__*/_react["default"].createElement(_musicPlayerContainer["default"], {
     songs: _playlist["default"]
   }) : /*#__PURE__*/_react["default"].createElement(_error["default"], null);
 };
