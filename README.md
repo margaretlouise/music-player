@@ -6,9 +6,9 @@
 
 We recommend using Node 13 for this project
 
-To download dependencies: `npm install`
-To run the app locally: `npm run` then open the browser to [http://localhost:3333](http://localhost:3333/)
-To run the tests: `npm test`
+- To download dependencies: `npm install`
+- To run the app locally: `npm run` then open the browser to [http://localhost:3333](http://localhost:3333/)
+- To run the tests: `npm test`
 
 ### Development server
 
