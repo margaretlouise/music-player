@@ -159,55 +159,310 @@ exports["default"] = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
+var _musicPlayerContainer = _interopRequireDefault(require("./containers/musicPlayerContainer"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var App = function App() {
+  return /*#__PURE__*/_react["default"].createElement(_musicPlayerContainer["default"], null);
+};
+
+var _default = App;
+exports["default"] = _default;
+});
+
+require.register("components/containers/musicPlayerContainer.js", function(exports, require, module) {
+"use strict";
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+var _react = _interopRequireWildcard(require("react"));
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+var _controls = _interopRequireDefault(require("../features/controls"));
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+var _songlist = _interopRequireDefault(require("../features/songlist"));
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+var _playlist = _interopRequireDefault(require("../../playlist"));
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-var App = /*#__PURE__*/function (_React$Component) {
-  _inherits(App, _React$Component);
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-  var _super = _createSuper(App);
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-  function App() {
-    _classCallCheck(this, App);
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-    return _super.apply(this, arguments);
-  }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-  _createClass(App, [{
-    key: "render",
-    value: function render() {
-      return /*#__PURE__*/_react["default"].createElement("h1", null, "Hello from App.jsx");
+var MusicPlayerContainer = function MusicPlayerContainer() {
+  var songs = _playlist["default"];
+  var audioPlayer = (0, _react.useRef)(null);
+
+  var _useState = (0, _react.useState)(0),
+      _useState2 = _slicedToArray(_useState, 2),
+      currentSongIndex = _useState2[0],
+      setCurrentSongIndex = _useState2[1];
+
+  var _useState3 = (0, _react.useState)(false),
+      _useState4 = _slicedToArray(_useState3, 2),
+      isPlaying = _useState4[0],
+      setIsPlaying = _useState4[1];
+
+  var _useState5 = (0, _react.useState)(false),
+      _useState6 = _slicedToArray(_useState5, 2),
+      isShuffled = _useState6[0],
+      setIsShuffled = _useState6[1];
+
+  var _useState7 = (0, _react.useState)([]),
+      _useState8 = _slicedToArray(_useState7, 2),
+      shuffledIndexList = _useState8[0],
+      setShuffledIndexList = _useState8[1]; // Keep playing audio as long as `isPlaying` is true. If a new song is
+  // selected while `isPlaying` is true, start it up. If `isPlaying` is
+  // false, we pause the song!
+
+
+  (0, _react.useEffect)(function () {
+    if (isPlaying) {
+      audioPlayer.current.play();
+    } else {
+      audioPlayer.current.pause();
     }
-  }]);
+  }, [currentSongIndex, isPlaying]); // Listen for a song end so we can find the next song and start
+  // playing it automatically
 
-  return App;
-}(_react["default"].Component);
+  (0, _react.useEffect)(function () {
+    audioPlayer.current.addEventListener('ended', function () {
+      navigatePlaylist();
+    });
+  }); // This function does the two initial action items
 
-exports["default"] = App;
+  var shufflePlaylist = function shufflePlaylist() {
+    setIsShuffled(!isShuffled);
+
+    if (isShuffled) {
+      setShuffledIndexList([currentSongIndex]);
+    } else {
+      setShuffledIndexList([]);
+    }
+  }; // This function handles the user action of clicking on a song
+  // to play it
+
+
+  var manuallySelectSong = function manuallySelectSong(song) {
+    var songIndex = songs.indexOf(song); // if we are in shuffle mode, save this song to our history stack
+
+    if (isShuffled) {
+      shuffledIndexList.push(songIndex);
+    }
+
+    setCurrentSongIndex(songIndex);
+  };
+
+  var navigatePlaylist = function navigatePlaylist(event) {
+    var songIndex;
+    var lastSongInPlaylist = songs.length - 1; // If no event is passed, 'forward' is the default direction
+
+    var direction = event ? event.target.value : 'forward';
+
+    if (isShuffled) {
+      if (direction === 'forward') {
+        songIndex = Math.floor(Math.random() * songs.length);
+        shuffledIndexList.push(songIndex);
+      } else {
+        // if we are at the beginning of our shuffled list,
+        // don't let the user navigate further back
+        if (shuffledIndexList.length === 1) {
+          songIndex = shuffledIndexList[0];
+        } else {
+          // pop off the current song
+          shuffledIndexList.pop(); // set the next song index to the next item in the array
+
+          songIndex = shuffledIndexList[shuffledIndexList.length - 1];
+        }
+      }
+    } else {
+      if (direction === 'forward') {
+        if (currentSongIndex === lastSongInPlaylist) {
+          songIndex = 0;
+        } else {
+          songIndex = currentSongIndex + 1;
+        }
+      } else {
+        if (currentSongIndex === 0) {
+          songIndex = lastSongInPlaylist;
+        } else {
+          songIndex = currentSongIndex - 1;
+        }
+      }
+    }
+
+    setCurrentSongIndex(songIndex);
+  };
+
+  return /*#__PURE__*/_react["default"].createElement("div", {
+    className: "music-player"
+  }, /*#__PURE__*/_react["default"].createElement(_controls["default"], {
+    currentSong: songs[currentSongIndex],
+    currentSongUrl: songs[currentSongIndex].url,
+    audioPlayer: audioPlayer,
+    isPlaying: isPlaying,
+    handleNav: function handleNav(e) {
+      return navigatePlaylist(e);
+    },
+    handlePlayOrPause: function handlePlayOrPause() {
+      return setIsPlaying(!isPlaying);
+    }
+  }), /*#__PURE__*/_react["default"].createElement(_songlist["default"], {
+    songs: songs,
+    isShuffled: isShuffled,
+    handleShuffle: function handleShuffle() {
+      return shufflePlaylist();
+    },
+    handleSelectSong: function handleSelectSong(song) {
+      return manuallySelectSong(song);
+    },
+    currentSongId: songs[currentSongIndex].id
+  }));
+};
+
+var _default = MusicPlayerContainer;
+exports["default"] = _default;
 });
 
-;require.register("initialize.js", function(exports, require, module) {
+require.register("components/features/controls.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var Controls = function Controls(props) {
+  var currentSong = props.currentSong,
+      audioPlayer = props.audioPlayer,
+      isPlaying = props.isPlaying,
+      handleNav = props.handleNav,
+      handlePlayOrPause = props.handlePlayOrPause;
+  var buttonCopy = isPlaying ? 'Pause' : 'Play';
+  return /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("h1", null, currentSong.track), /*#__PURE__*/_react["default"].createElement("audio", {
+    src: currentSong.url,
+    ref: audioPlayer,
+    type: "audio/mpeg"
+  }, "Your browser does not support the audio tag."), /*#__PURE__*/_react["default"].createElement("div", {
+    className: "music-player-controls"
+  }, /*#__PURE__*/_react["default"].createElement("button", {
+    className: "nav-btn",
+    value: "backward",
+    onClick: handleNav
+  }, "Prev"), /*#__PURE__*/_react["default"].createElement("button", {
+    className: "play-pause-btn",
+    onClick: handlePlayOrPause
+  }, buttonCopy), /*#__PURE__*/_react["default"].createElement("button", {
+    className: "nav-btn",
+    value: "forward",
+    onClick: handleNav
+  }, "Next")));
+};
+
+var _default = Controls;
+exports["default"] = _default;
+});
+
+require.register("components/features/song.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var Song = function Song(props) {
+  var artist = props.artist,
+      album = props.album,
+      track = props.track;
+  return /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement("h4", null, track), /*#__PURE__*/_react["default"].createElement("p", null, artist, " - ", album));
+};
+
+var _default = Song;
+exports["default"] = _default;
+});
+
+require.register("components/features/songlist.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _song = _interopRequireDefault(require("./song"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+// components
+var SongList = function SongList(props) {
+  var songs = props.songs,
+      isShuffled = props.isShuffled,
+      handleShuffle = props.handleShuffle,
+      currentSongId = props.currentSongId,
+      handleSelectSong = props.handleSelectSong;
+  if (!songs || songs.length === 0) return /*#__PURE__*/_react["default"].createElement("p", null, "No Songs");
+  return /*#__PURE__*/_react["default"].createElement("div", {
+    className: "playlist"
+  }, /*#__PURE__*/_react["default"].createElement("h3", null, "Playlist"), /*#__PURE__*/_react["default"].createElement("div", {
+    className: "shuffle-toggle"
+  }, /*#__PURE__*/_react["default"].createElement("label", null, /*#__PURE__*/_react["default"].createElement("input", {
+    name: "isShuffled",
+    type: "checkbox",
+    id: "shuffle-songs",
+    checked: isShuffled,
+    onChange: handleShuffle
+  }), "Shuffle")), /*#__PURE__*/_react["default"].createElement("ul", null, songs.map(function (song) {
+    return /*#__PURE__*/_react["default"].createElement("li", {
+      key: song.id,
+      className: currentSongId === song.id ? 'current-song' : 'song'
+    }, /*#__PURE__*/_react["default"].createElement("button", {
+      onClick: function onClick() {
+        return handleSelectSong(song);
+      }
+    }, /*#__PURE__*/_react["default"].createElement(_song["default"], {
+      artist: song.artist,
+      album: song.album,
+      track: song.track,
+      url: song.url,
+      id: song.id
+    })));
+  })));
+};
+
+var _default = SongList;
+exports["default"] = _default;
+});
+
+require.register("initialize.js", function(exports, require, module) {
 "use strict";
 
 var _reactDom = _interopRequireDefault(require("react-dom"));
