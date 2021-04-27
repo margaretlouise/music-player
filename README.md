@@ -28,3 +28,8 @@ As currently configured, the starting point for brunch is at `app/assets/index.h
   - I opted to have one container component that receives data and manages all state. This container passes props down to a few feature components which are able to stay presentational only. This makes sure we have only one source of truth for our state.
 - Testing
   - I wrote basic tests to ensure components were rendering without crashing and that some of the critical presentational elements that depend on specific props were working correctly. This is one area I would have liked to spend more time.
+
+## Wish List
+
+- I had to stop futzing with it, but after adding the song history work, I think I'd really like to split the music player container into two pieces - one that handles displaying song list data and one that manages the controls and navigation through a shuffled or unshuffled list.
+- I'd also like to optimize my shuffle function. I'm sure there is a better way to do this!
