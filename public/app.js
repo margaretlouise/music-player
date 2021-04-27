@@ -161,10 +161,19 @@ var _react = _interopRequireDefault(require("react"));
 
 var _musicPlayerContainer = _interopRequireDefault(require("./containers/musicPlayerContainer"));
 
+var _error = _interopRequireDefault(require("./shared/error"));
+
+var _playlist = _interopRequireDefault(require("../playlist"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+// containers
+// shared components
+// song data
 var App = function App() {
-  return /*#__PURE__*/_react["default"].createElement(_musicPlayerContainer["default"], null);
+  return !_playlist["default"].length ? /*#__PURE__*/_react["default"].createElement(_musicPlayerContainer["default"], {
+    songs: _playlist["default"]
+  }) : /*#__PURE__*/_react["default"].createElement(_error["default"], null);
 };
 
 var _default = App;
@@ -187,13 +196,19 @@ var _controls = _interopRequireDefault(require("../features/controls"));
 
 var _songlist = _interopRequireDefault(require("../features/songlist"));
 
-var _playlist = _interopRequireDefault(require("../../playlist"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -207,19 +222,19 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var MusicPlayerContainer = function MusicPlayerContainer() {
-  var songs = _playlist["default"];
+var MusicPlayerContainer = function MusicPlayerContainer(props) {
+  var songs = props.songs;
   var audioPlayer = (0, _react.useRef)(null);
 
-  var _useState = (0, _react.useState)(0),
+  var _useState = (0, _react.useState)(false),
       _useState2 = _slicedToArray(_useState, 2),
-      currentSongIndex = _useState2[0],
-      setCurrentSongIndex = _useState2[1];
+      isPlaying = _useState2[0],
+      setIsPlaying = _useState2[1];
 
-  var _useState3 = (0, _react.useState)(false),
+  var _useState3 = (0, _react.useState)(songs[0]),
       _useState4 = _slicedToArray(_useState3, 2),
-      isPlaying = _useState4[0],
-      setIsPlaying = _useState4[1];
+      currentSong = _useState4[0],
+      setCurrentSong = _useState4[1];
 
   var _useState5 = (0, _react.useState)(false),
       _useState6 = _slicedToArray(_useState5, 2),
@@ -228,8 +243,8 @@ var MusicPlayerContainer = function MusicPlayerContainer() {
 
   var _useState7 = (0, _react.useState)([]),
       _useState8 = _slicedToArray(_useState7, 2),
-      shuffledIndexList = _useState8[0],
-      setShuffledIndexList = _useState8[1]; // Keep playing audio as long as `isPlaying` is true. If a new song is
+      shuffledSongList = _useState8[0],
+      setShuffledSongList = _useState8[1]; // Keep playing audio as long as `isPlaying` is true. If a new song is
   // selected while `isPlaying` is true, start it up. If `isPlaying` is
   // false, we pause the song!
 
@@ -240,83 +255,81 @@ var MusicPlayerContainer = function MusicPlayerContainer() {
     } else {
       audioPlayer.current.pause();
     }
-  }, [currentSongIndex, isPlaying]); // Listen for a song end so we can find the next song and start
-  // playing it automatically
+  }, [currentSong, isPlaying]); // Listen for song end so we can find the next song and start
+  // playing it automatically.
 
   (0, _react.useEffect)(function () {
     audioPlayer.current.addEventListener('ended', function () {
       navigatePlaylist();
     });
-  }); // This function does the two initial action items
+  }); // This function does the two initial action items needed when a
+  // user toggles shuffle off or on - we set shuffle to the opposite
+  // of what it's currently set to, and we make a copy of our songs
+  // list and shuffle them, then set the shuffled list to state.
 
   var shufflePlaylist = function shufflePlaylist() {
     setIsShuffled(!isShuffled);
 
-    if (isShuffled) {
-      setShuffledIndexList([currentSongIndex]);
-    } else {
-      setShuffledIndexList([]);
+    var shuffledArray = _toConsumableArray(songs);
+
+    for (var i = shuffledArray.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = shuffledArray[i];
+      shuffledArray[i] = shuffledArray[j];
+      shuffledArray[j] = temp;
     }
+
+    setShuffledSongList(shuffledArray);
   }; // This function handles the user action of clicking on a song
-  // to play it
+  // to play it. If a user manually selects a song, we turn
+  // shuffle mode off.
 
 
   var manuallySelectSong = function manuallySelectSong(song) {
-    var songIndex = songs.indexOf(song); // if we are in shuffle mode, save this song to our history stack
-
     if (isShuffled) {
-      shuffledIndexList.push(songIndex);
+      setIsShuffled(!isShuffled);
     }
 
-    setCurrentSongIndex(songIndex);
-  };
+    setCurrentSong(song);
+  }; // This function handles song navigation, whether we are on
+  // shuffle mode or not.
+
 
   var navigatePlaylist = function navigatePlaylist(event) {
-    var songIndex;
-    var lastSongInPlaylist = songs.length - 1; // If no event is passed, 'forward' is the default direction
+    var songIndex; // If no event is passed, default to 'forward'
 
     var direction = event ? event.target.value : 'forward';
+    var lastSongInPlaylist = songs.length - 1; // Find the current song's index in either the shuffled list
+    // or the regular list, depending on our shuffle status
 
-    if (isShuffled) {
-      if (direction === 'forward') {
-        songIndex = Math.floor(Math.random() * songs.length);
-        shuffledIndexList.push(songIndex);
+    var currentSongIndex = isShuffled ? shuffledSongList.indexOf(currentSong) : songs.indexOf(currentSong);
+
+    if (direction === 'forward') {
+      if (currentSongIndex === lastSongInPlaylist) {
+        songIndex = 0;
       } else {
-        // if we are at the beginning of our shuffled list,
-        // don't let the user navigate further back
-        if (shuffledIndexList.length === 1) {
-          songIndex = shuffledIndexList[0];
-        } else {
-          // pop off the current song
-          shuffledIndexList.pop(); // set the next song index to the next item in the array
-
-          songIndex = shuffledIndexList[shuffledIndexList.length - 1];
-        }
+        songIndex = currentSongIndex + 1;
       }
     } else {
-      if (direction === 'forward') {
-        if (currentSongIndex === lastSongInPlaylist) {
-          songIndex = 0;
-        } else {
-          songIndex = currentSongIndex + 1;
-        }
+      // TODO: whats the best UX here?
+      if (currentSongIndex === 0) {
+        songIndex = lastSongInPlaylist;
       } else {
-        if (currentSongIndex === 0) {
-          songIndex = lastSongInPlaylist;
-        } else {
-          songIndex = currentSongIndex - 1;
-        }
+        songIndex = currentSongIndex - 1;
       }
     }
 
-    setCurrentSongIndex(songIndex);
+    if (isShuffled) {
+      setCurrentSong(shuffledSongList[songIndex]);
+    } else {
+      setCurrentSong(songs[songIndex]);
+    }
   };
 
   return /*#__PURE__*/_react["default"].createElement("div", {
     className: "music-player"
-  }, /*#__PURE__*/_react["default"].createElement(_controls["default"], {
-    currentSong: songs[currentSongIndex],
-    currentSongUrl: songs[currentSongIndex].url,
+  }, songs.length ? /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement(_controls["default"], {
+    currentSong: currentSong,
     audioPlayer: audioPlayer,
     isPlaying: isPlaying,
     handleNav: function handleNav(e) {
@@ -334,8 +347,8 @@ var MusicPlayerContainer = function MusicPlayerContainer() {
     handleSelectSong: function handleSelectSong(song) {
       return manuallySelectSong(song);
     },
-    currentSongId: songs[currentSongIndex].id
-  }));
+    currentSongId: currentSong.id
+  })) : /*#__PURE__*/_react["default"].createElement("div", null, "no songs sad"));
 };
 
 var _default = MusicPlayerContainer;
@@ -429,7 +442,6 @@ var SongList = function SongList(props) {
       handleShuffle = props.handleShuffle,
       currentSongId = props.currentSongId,
       handleSelectSong = props.handleSelectSong;
-  if (!songs || songs.length === 0) return /*#__PURE__*/_react["default"].createElement("p", null, "No Songs");
   return /*#__PURE__*/_react["default"].createElement("div", {
     className: "playlist"
   }, /*#__PURE__*/_react["default"].createElement("h3", null, "Playlist"), /*#__PURE__*/_react["default"].createElement("div", {
@@ -459,6 +471,28 @@ var SongList = function SongList(props) {
 };
 
 var _default = SongList;
+exports["default"] = _default;
+});
+
+require.register("components/shared/error.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var Error = function Error() {
+  return /*#__PURE__*/_react["default"].createElement("div", {
+    className: "error"
+  }, /*#__PURE__*/_react["default"].createElement("h4", null, "Dang, we had trouble loading your music."), /*#__PURE__*/_react["default"].createElement("p", null, "Please double check your playlist file and try again."));
+};
+
+var _default = Error;
 exports["default"] = _default;
 });
 

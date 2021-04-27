@@ -12,8 +12,6 @@ const SongList = (props) => {
     handleSelectSong
   } = props;
 
-  if (!songs || songs.length === 0) return <p>No Songs</p>;
-
   return (
     <div className="playlist">
       <h3>Playlist</h3>

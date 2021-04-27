@@ -11,7 +11,7 @@
 
 ## TODO
 
-1. Shuffle songs
-2. create songs played list
-3. button copy for play/pause
-4. start a new song if "playing" and navigating between songs
+1. Figure out hover state with border-left
+2. Error handling - what if there are no songs? handle at top level/ loading
+3. Write tests
+4. Figure out how we want to handle being the first song in the list
