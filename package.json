@@ -1,8 +1,8 @@
 {
-  "name": "boundless-react-challenge",
+  "name": "react-challenge",
   "description": "A music player written in React",
   "private": true,
-  "author": "Boundless",
+  "author": "margit",
   "version": "0.0.1",
   "scripts": {
     "start": "brunch watch --server",
