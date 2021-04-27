@@ -244,9 +244,19 @@ var MusicPlayerContainer = function MusicPlayerContainer(props) {
   var _useState7 = (0, _react.useState)([]),
       _useState8 = _slicedToArray(_useState7, 2),
       shuffledSongList = _useState8[0],
-      setShuffledSongList = _useState8[1]; // Keep playing audio as long as `isPlaying` is true. If a new song is
+      setShuffledSongList = _useState8[1];
+
+  var _useState9 = (0, _react.useState)(false),
+      _useState10 = _slicedToArray(_useState9, 2),
+      showEndPlaylistAlert = _useState10[0],
+      setShowEndPlaylistAlert = _useState10[1];
+
+  var _useState11 = (0, _react.useState)([]),
+      _useState12 = _slicedToArray(_useState11, 2),
+      songHistory = _useState12[0],
+      setSongHistory = _useState12[1]; // Keep playing audio as long as `isPlaying` is true. If a new song is
   // selected while `isPlaying` is true, start it up. If `isPlaying` is
-  // false, we pause the song!
+  // false, pause the song!
 
 
   (0, _react.useEffect)(function () {
@@ -254,81 +264,94 @@ var MusicPlayerContainer = function MusicPlayerContainer(props) {
       audioPlayer.current.play();
     } else {
       audioPlayer.current.pause();
-    }
-  }, [currentSong, isPlaying]); // Listen for song end so we can find the next song and start
+    } // Save each played song to our listening history as we go
+
+
+    setSongHistory(songHistory.concat(currentSong));
+  }, [currentSong, isPlaying]); // Listen for song end so we can navigate to the next song and start
   // playing it automatically.
 
   (0, _react.useEffect)(function () {
     audioPlayer.current.addEventListener('ended', function () {
       navigatePlaylist();
     });
-  }); // This function does the two initial action items needed when a
-  // user toggles shuffle off or on - we set shuffle to the opposite
-  // of what it's currently set to, and we make a copy of our songs
-  // list and shuffle them, then set the shuffled list to state.
-
-  var shufflePlaylist = function shufflePlaylist() {
-    setIsShuffled(!isShuffled);
-
-    var shuffledArray = _toConsumableArray(songs);
-
-    for (var i = shuffledArray.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = shuffledArray[i];
-      shuffledArray[i] = shuffledArray[j];
-      shuffledArray[j] = temp;
-    }
-
-    setShuffledSongList(shuffledArray);
-  }; // This function handles the user action of clicking on a song
-  // to play it. If a user manually selects a song, we turn
-  // shuffle mode off.
-
-
-  var manuallySelectSong = function manuallySelectSong(song) {
-    if (isShuffled) {
-      setIsShuffled(!isShuffled);
-    }
-
-    setCurrentSong(song);
-  }; // This function handles song navigation, whether we are on
-  // shuffle mode or not.
-
+  }, []); // This function handles song navigation, whether we are on
+  // shuffle mode or regular listening. If no event is passed,
+  // we default to 'forward'
 
   var navigatePlaylist = function navigatePlaylist(event) {
-    var songIndex; // If no event is passed, default to 'forward'
-
     var direction = event ? event.target.value : 'forward';
-    var lastSongInPlaylist = songs.length - 1; // Find the current song's index in either the shuffled list
+
+    if (direction === 'forward') {
+      navForward();
+    } else {
+      navBack();
+    }
+  };
+
+  var navBack = function navBack() {
+    // When we reach the end of our song history,
+    // make sure shuffle is set to off, and don't let
+    // the user go past the first song in the playlist
+    if (songHistory.length <= 1) {
+      setIsShuffled(false);
+      setCurrentSong(songs[0]);
+      setShowEndPlaylistAlert(true);
+    } else {
+      // Otherwise, pop off the current song and then
+      // pop the next song off to set to the new current.
+      songHistory.pop();
+      setCurrentSong(songHistory.pop());
+    }
+  };
+
+  var navForward = function navForward() {
+    var songIndex;
+    setShowEndPlaylistAlert(false); // Find the index of the current song in either the shuffled list
     // or the regular list, depending on our shuffle status
 
     var currentSongIndex = isShuffled ? shuffledSongList.indexOf(currentSong) : songs.indexOf(currentSong);
 
-    if (direction === 'forward') {
-      if (currentSongIndex === lastSongInPlaylist) {
-        songIndex = 0;
-      } else {
-        songIndex = currentSongIndex + 1;
-      }
+    if (currentSongIndex === songs.length - 1) {
+      songIndex = 0;
     } else {
-      // TODO: whats the best UX here?
-      if (currentSongIndex === 0) {
-        songIndex = lastSongInPlaylist;
-      } else {
-        songIndex = currentSongIndex - 1;
-      }
+      songIndex = currentSongIndex + 1;
     }
 
-    if (isShuffled) {
-      setCurrentSong(shuffledSongList[songIndex]);
-    } else {
-      setCurrentSong(songs[songIndex]);
-    }
+    isShuffled ? setCurrentSong(shuffledSongList[songIndex]) : setCurrentSong(songs[songIndex]);
+  }; // This function does the two initial action items needed when a
+  // user toggles shuffle off or on: set `isShuffled` and create
+  // a shuffled list of songs, starting with our current song
+
+
+  var shufflePlaylist = function shufflePlaylist() {
+    setIsShuffled(!isShuffled); // Create a variable to store our shuffled array and put the
+    // current song as the first item in the array
+
+    var shuffledArray = [currentSong]; // Now make a copy of the songs array
+
+    var array = _toConsumableArray(songs); // Find the song we are starting with
+
+
+    var startedAt = array.indexOf(currentSong); // Remove it, we don't want to shuffle it
+
+    array.splice(startedAt, 1); // Shuffle the items in the array
+
+    for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    } // Add the shuffled items to our starting song
+
+
+    shuffledArray = shuffledArray.concat(array);
+    setShuffledSongList(shuffledArray);
   };
 
   return /*#__PURE__*/_react["default"].createElement("div", {
     className: "music-player"
-  }, songs.length ? /*#__PURE__*/_react["default"].createElement("div", null, /*#__PURE__*/_react["default"].createElement(_controls["default"], {
+  }, /*#__PURE__*/_react["default"].createElement(_controls["default"], {
     currentSong: currentSong,
     audioPlayer: audioPlayer,
     isPlaying: isPlaying,
@@ -345,10 +368,11 @@ var MusicPlayerContainer = function MusicPlayerContainer(props) {
       return shufflePlaylist();
     },
     handleSelectSong: function handleSelectSong(song) {
-      return manuallySelectSong(song);
+      return setCurrentSong(song);
     },
-    currentSongId: currentSong.id
-  })) : /*#__PURE__*/_react["default"].createElement("div", null, "no songs sad"));
+    currentSongId: currentSong.id,
+    showEndPlaylistAlert: showEndPlaylistAlert
+  }));
 };
 
 var _default = MusicPlayerContainer;
@@ -441,7 +465,8 @@ var SongList = function SongList(props) {
       isShuffled = props.isShuffled,
       handleShuffle = props.handleShuffle,
       currentSongId = props.currentSongId,
-      handleSelectSong = props.handleSelectSong;
+      handleSelectSong = props.handleSelectSong,
+      showEndPlaylistAlert = props.showEndPlaylistAlert;
   return /*#__PURE__*/_react["default"].createElement("div", {
     className: "playlist"
   }, /*#__PURE__*/_react["default"].createElement("h3", null, "Playlist"), /*#__PURE__*/_react["default"].createElement("div", {
@@ -452,7 +477,9 @@ var SongList = function SongList(props) {
     id: "shuffle-songs",
     checked: isShuffled,
     onChange: handleShuffle
-  }), "Shuffle")), /*#__PURE__*/_react["default"].createElement("ul", null, songs.map(function (song) {
+  }), "Shuffle")), showEndPlaylistAlert && /*#__PURE__*/_react["default"].createElement("h5", {
+    className: "alert"
+  }, "You've reached the end of your song listening history."), /*#__PURE__*/_react["default"].createElement("ul", null, songs.map(function (song) {
     return /*#__PURE__*/_react["default"].createElement("li", {
       key: song.id,
       className: currentSongId === song.id ? 'current-song' : 'song'

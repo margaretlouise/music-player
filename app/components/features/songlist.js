@@ -9,7 +9,8 @@ const SongList = (props) => {
     isShuffled,
     handleShuffle,
     currentSongId,
-    handleSelectSong
+    handleSelectSong,
+    showEndPlaylistAlert
   } = props;
 
   return (
@@ -27,6 +28,11 @@ const SongList = (props) => {
           Shuffle
         </label>
       </div>
+      {showEndPlaylistAlert && (
+        <h5 className="alert">
+          You've reached the end of your song listening history.
+        </h5>
+      )}
       <ul>
         {songs.map((song) => {
           return (

@@ -10,119 +10,131 @@ const MusicPlayerContainer = (props) => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSong, setCurrentSong] = useState(songs[0]);
-
   const [isShuffled, setIsShuffled] = useState(false);
   const [shuffledSongList, setShuffledSongList] = useState([]);
+  const [showEndPlaylistAlert, setShowEndPlaylistAlert] = useState(false);
+  const [songHistory, setSongHistory] = useState([]);
 
   // Keep playing audio as long as `isPlaying` is true. If a new song is
   // selected while `isPlaying` is true, start it up. If `isPlaying` is
-  // false, we pause the song!
+  // false, pause the song!
   useEffect(() => {
     if (isPlaying) {
       audioPlayer.current.play();
     } else {
       audioPlayer.current.pause();
     }
+
+    // Save each played song to our listening history as we go
+    setSongHistory(songHistory.concat(currentSong));
   }, [currentSong, isPlaying]);
 
-  // Listen for song end so we can find the next song and start
+  // Listen for song end so we can navigate to the next song and start
   // playing it automatically.
   useEffect(() => {
     audioPlayer.current.addEventListener('ended', () => {
       navigatePlaylist();
     });
-  });
-
-  // This function does the two initial action items needed when a
-  // user toggles shuffle off or on - we set shuffle to the opposite
-  // of what it's currently set to, and we make a copy of our songs
-  // list and shuffle them, then set the shuffled list to state.
-  const shufflePlaylist = () => {
-    setIsShuffled(!isShuffled);
-
-    var shuffledArray = [...songs];
-
-    for (var i = shuffledArray.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = shuffledArray[i];
-      shuffledArray[i] = shuffledArray[j];
-      shuffledArray[j] = temp;
-    }
-
-    setShuffledSongList(shuffledArray);
-  };
-
-  // This function handles the user action of clicking on a song
-  // to play it. If a user manually selects a song, we turn
-  // shuffle mode off.
-  const manuallySelectSong = (song) => {
-    if (isShuffled) {
-      setIsShuffled(!isShuffled);
-    }
-
-    setCurrentSong(song);
-  };
+  }, []);
 
   // This function handles song navigation, whether we are on
-  // shuffle mode or not.
+  // shuffle mode or regular listening. If no event is passed,
+  // we default to 'forward'
   const navigatePlaylist = (event) => {
-    let songIndex;
-
-    // If no event is passed, default to 'forward'
     const direction = event ? event.target.value : 'forward';
 
-    const lastSongInPlaylist = songs.length - 1;
+    if (direction === 'forward') {
+      navForward();
+    } else {
+      navBack();
+    }
+  };
 
-    // Find the current song's index in either the shuffled list
+  const navBack = () => {
+    // When we reach the end of our song history,
+    // make sure shuffle is set to off, and don't let
+    // the user go past the first song in the playlist
+    if (songHistory.length <= 1) {
+      setIsShuffled(false);
+      setCurrentSong(songs[0]);
+      setShowEndPlaylistAlert(true);
+    } else {
+      // Otherwise, pop off the current song and then
+      // pop the next song off to set to the new current.
+      songHistory.pop();
+      setCurrentSong(songHistory.pop());
+    }
+  };
+
+  const navForward = () => {
+    let songIndex;
+    setShowEndPlaylistAlert(false);
+
+    // Find the index of the current song in either the shuffled list
     // or the regular list, depending on our shuffle status
     const currentSongIndex = isShuffled
       ? shuffledSongList.indexOf(currentSong)
       : songs.indexOf(currentSong);
 
-    if (direction === 'forward') {
-      if (currentSongIndex === lastSongInPlaylist) {
-        songIndex = 0;
-      } else {
-        songIndex = currentSongIndex + 1;
-      }
+    if (currentSongIndex === songs.length - 1) {
+      songIndex = 0;
     } else {
-      // TODO: whats the best UX here?
-      if (currentSongIndex === 0) {
-        songIndex = lastSongInPlaylist;
-      } else {
-        songIndex = currentSongIndex - 1;
-      }
+      songIndex = currentSongIndex + 1;
     }
 
-    if (isShuffled) {
-      setCurrentSong(shuffledSongList[songIndex]);
-    } else {
-      setCurrentSong(songs[songIndex]);
+    isShuffled
+      ? setCurrentSong(shuffledSongList[songIndex])
+      : setCurrentSong(songs[songIndex]);
+  };
+
+  // This function does the two initial action items needed when a
+  // user toggles shuffle off or on: set `isShuffled` and create
+  // a shuffled list of songs, starting with our current song
+  const shufflePlaylist = () => {
+    setIsShuffled(!isShuffled);
+
+    // Create a variable to store our shuffled array and put the
+    // current song as the first item in the array
+    let shuffledArray = [currentSong];
+
+    // Now make a copy of the songs array
+    let array = [...songs];
+    // Find the song we are starting with
+    const startedAt = array.indexOf(currentSong);
+    // Remove it, we don't want to shuffle it
+    array.splice(startedAt, 1);
+
+    // Shuffle the items in the array
+    for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
     }
+
+    // Add the shuffled items to our starting song
+    shuffledArray = shuffledArray.concat(array);
+
+    setShuffledSongList(shuffledArray);
   };
 
   return (
     <div className="music-player">
-      {songs.length ? (
-        <div>
-          <Controls
-            currentSong={currentSong}
-            audioPlayer={audioPlayer}
-            isPlaying={isPlaying}
-            handleNav={(e) => navigatePlaylist(e)}
-            handlePlayOrPause={() => setIsPlaying(!isPlaying)}
-          />
-          <SongList
-            songs={songs}
-            isShuffled={isShuffled}
-            handleShuffle={() => shufflePlaylist()}
-            handleSelectSong={(song) => manuallySelectSong(song)}
-            currentSongId={currentSong.id}
-          />
-        </div>
-      ) : (
-        <div>no songs sad</div>
-      )}
+      <Controls
+        currentSong={currentSong}
+        audioPlayer={audioPlayer}
+        isPlaying={isPlaying}
+        handleNav={(e) => navigatePlaylist(e)}
+        handlePlayOrPause={() => setIsPlaying(!isPlaying)}
+      />
+      <SongList
+        songs={songs}
+        isShuffled={isShuffled}
+        handleShuffle={() => shufflePlaylist()}
+        handleSelectSong={(song) => setCurrentSong(song)}
+        currentSongId={currentSong.id}
+        showEndPlaylistAlert={showEndPlaylistAlert}
+      />
     </div>
   );
 };

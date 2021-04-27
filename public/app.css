@@ -1,3 +1,7 @@
+/* ------------- */
+/* Global Styles */
+/* ------------- */
+
 body {
   font-family: sans-serif;
   font-size: 16px;
@@ -16,6 +20,10 @@ input {
   cursor: pointer;
 }
 
+/* ------ */
+/* Player */
+/* ------ */
+
 .music-player {
   background-color: #f6c69f;
   width: 480px;
@@ -30,13 +38,13 @@ input {
   font-size: 1rem;
 }
 
-/* --------------- */
-/* Control Section */
-/* --------------- */
+/* ----------------- */
+/* Controls Section */
+/* ---------------- */
 
 .music-player-controls {
   margin: auto;
-  width: 50%;
+  width: 240px;
   padding-bottom: 1rem;
 }
 
@@ -117,7 +125,14 @@ input {
   padding: 0;
 }
 
-.song:hover {
+.song:hover div::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  background: #ff6a35;
+  height: 38px;
+  width: 4px;
+  border-radius: 4px;
 }
 
 .current-song button {
@@ -126,15 +141,45 @@ input {
   padding: 0 16px;
 }
 
-/* ----- */
-/* Error */
-/* ----- */
+/* --------------- */
+/* Alerts & Errors */
+/* --------------- */
 
 .error {
-  width: 480px;
   margin: 80px auto;
+  width: 480px;
   padding: 48px;
   border-radius: 32px;
   background-color: mistyrose;
   color: tomato;
 }
+
+.alert {
+  color: orangered;
+}
+
+/* ------------- */
+/* Mobile Styles */
+/* ------------- */
+
+@media (max-width: 480px) {
+  body {
+    background-color: #fefefe;
+    min-width: 320px;
+  }
+
+  .music-player {
+    background-color: #f6c69f;
+    width: 100%;
+    margin: auto;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .playlist {
+    border-radius: 0;
+  }
+}
+
+
+/*# sourceMappingURL=app.css.map*/

@@ -1,20 +1,25 @@
-import React from 'react'
-import { shallow } from 'enzyme'
+import React from 'react';
+import { shallow } from 'enzyme';
 
-import App from 'components/App'
+import App from 'components/App';
+import MusicPlayerContainer from 'components/containers/musicPlayerContainer';
 
-// Enzyme render test docs: https://airbnb.io/enzyme/docs/api
+import playlist from 'playlist';
+
 describe('<App />', () => {
-  it('renders the component', () => {
-    const app = shallow(<App />)
+  it('renders the container if there are songs', () => {
+    const app = shallow(<App songs={playlist} />);
+    const playerContainer = shallow(<MusicPlayerContainer songs={playlist} />);
 
-    expect(app.exists()).to.equal(true)
-  })
+    expect(app.exists()).to.equal(true);
+    expect(playerContainer.exists()).to.equal(true);
+  });
 
-  it('renders hello world text', () => {
-    const app = shallow(<App />)
+  it('renders an error if there are no songs', () => {
+    const app = shallow(<App />);
+    const error = shallow(<Error />);
 
-    expect(app.find('h1')).to.have.lengthOf(1)
-    expect(app.text()).to.equal("Hello from App.jsx")
-  })
-})
+    expect(app.exists()).to.equal(true);
+    expect(error.exists()).to.equal(true);
+  });
+});
